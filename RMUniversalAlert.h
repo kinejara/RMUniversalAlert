@@ -16,7 +16,7 @@ typedef void(^RMUniversalAlertCompletionBlock)(RMUniversalAlert * __nonnull aler
 
 @interface RMUniversalAlert : NSObject
 
-+ (nonnull instancetype)showAlertInViewController:(nonnull UIViewController *)viewController
++ (nonnull instancetype)showAlertInViewController:(nullable UIViewController *)viewController
                                         withTitle:(nullable NSString *)title
                                           message:(nullable NSString *)message
                                 cancelButtonTitle:(nullable NSString *)cancelButtonTitle

@@ -13,7 +13,6 @@
 #import "RMUniversalAlert.h"
 
 static NSInteger const RMUniversalAlertNoButtonExistsIndex = -1;
-
 static NSInteger const RMUniversalAlertCancelButtonIndex = 0;
 static NSInteger const RMUniversalAlertDestructiveButtonIndex = 1;
 static NSInteger const RMUniversalAlertFirstOtherButtonIndex = 2;
@@ -23,6 +22,7 @@ static NSInteger const RMUniversalAlertFirstOtherButtonIndex = 2;
 @property (nonatomic) UIAlertController *alertController;
 @property (nonatomic) UIAlertView *alertView;
 @property (nonatomic) UIActionSheet *actionSheet;
+@property (nonatomic, strong) UIWindow *alertWindow;
 
 @property (nonatomic, assign) BOOL hasCancelButton;
 @property (nonatomic, assign) BOOL hasDestructiveButton;
@@ -31,6 +31,19 @@ static NSInteger const RMUniversalAlertFirstOtherButtonIndex = 2;
 @end
 
 @implementation RMUniversalAlert
+
+- (UIWindow *)alertWindow {
+    if (!_alertWindow) {
+        CGRect frame = [UIScreen mainScreen].bounds;
+        _alertWindow = [[UIWindow alloc] initWithFrame:frame];
+        _alertWindow.rootViewController = [UIViewController new];
+        _alertWindow.backgroundColor = [UIColor clearColor];
+        
+        [_alertWindow makeKeyAndVisible];
+    }
+    
+    return _alertWindow;
+}
 
 + (instancetype)showAlertInViewController:(UIViewController *)viewController
                                 withTitle:(NSString *)title
@@ -47,12 +60,20 @@ static NSInteger const RMUniversalAlertFirstOtherButtonIndex = 2;
     alert.hasOtherButtons = otherButtonTitles.count > 0;
     
     if ([UIAlertController class]) {
+        if (!viewController) {
+            viewController = alert.alertWindow.rootViewController;
+        }
+
+        
         alert.alertController = [UIAlertController showAlertInViewController:viewController
                                                                    withTitle:title message:message
                                                            cancelButtonTitle:cancelButtonTitle
                                                       destructiveButtonTitle:destructiveButtonTitle
                                                            otherButtonTitles:otherButtonTitles
                                                                     tapBlock:^(UIAlertController *controller, UIAlertAction *action, NSInteger buttonIndex){
+                                                                        alert.alertWindow.hidden = YES;
+                                                                        alert.alertWindow = nil;
+                                                                        
                                                                         if (tapBlock) {
                                                                             tapBlock(alert, buttonIndex);
                                                                         }
